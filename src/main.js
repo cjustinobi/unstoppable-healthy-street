@@ -247,16 +247,14 @@ window.login = async () => {
 
 window.logout = async () => {
   try {
-    alert('here')
     await uauth.logout()
-    alert('here2')
-    debugger
     localStorage.removeItem('address')
-    loginBtn()
-
-
+    // loginBtn()
     let el = document.querySelector('.dropdown-btn')
     el.classList.add('d-none')
+    window.location.reload()
+
+
   } catch (error) {
     console.error(error)
   }
