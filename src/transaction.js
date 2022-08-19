@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 
-export const sendTx = async  (reciever, amount) => {
+export const sendTx = async  (receiver, amount) => {
 
   const ethereum = window.ethereum;
 
@@ -12,7 +12,7 @@ export const sendTx = async  (reciever, amount) => {
 
       const transaction = [{
         from: accounts[0],
-        to: reciever,
+        to: receiver,
         value: ethers.utils.parseUnits(amount, 'ether').toHexString(),
         gasLimit: ethers.utils.hexlify(100000),
         gasPrice: ethers.utils.hexlify(parseInt(await provider.getGasPrice())),

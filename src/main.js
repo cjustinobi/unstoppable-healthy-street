@@ -214,7 +214,7 @@ document
       const domain = e.target.innerText
       const address = await domainResolution(domain)
       if (address) {
-        receiverAddress = address
+        localStorage.setItem('receiverAddress', address)
         let modal = new bootstrap.Modal(document.getElementById("tipModal"), {});
         modal.show();
         document.querySelector('#vendorAddress').value = domain
