@@ -9,7 +9,7 @@ import { sendTx } from './transaction'
 
 const ERC20_DECIMALS = 18
 // const MPContractAddress = "0xE1ea345FEeA9401C0f3E7593092436D4703ACB8a"
-const MPContractAddress = "0xb562E84914B84e0eF2A7ED02f462b07e0652032c"
+const MPContractAddress = "0x5C8E0c1D9ae89B18B89358249C23EC837a190Ba3"
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
 
 let kit
