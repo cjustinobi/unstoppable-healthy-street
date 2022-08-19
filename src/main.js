@@ -159,7 +159,10 @@ document
     const amount = document.getElementById("tipAmount").value
     const receiverAddress = document.getElementById("resolvedAddress").value
     const res = await sendTx(receiverAddress, amount)
-    console.log(res)
+    if (res) {
+      document.querySelector('#tip-form').reset()
+      console.log(res)
+    }
 })
 
 
@@ -186,6 +189,7 @@ document
       notification(`⚠️ ${error}.`)
       }
     notification(`🎉 You successfully added "${params[0]}".`)
+    document.querySelector('#product-form').reset()
     getProducts()
   })
 
