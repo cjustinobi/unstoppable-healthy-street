@@ -19,7 +19,7 @@ let receiverAddress
 
 const uauth = new UAuth({
   clientID: "8281b30a-61de-4df4-99e4-116a3a4c340a",
-  redirectUri: "http://localhost:3000",
+  redirectUri: "https://cjustinobi.github.io/unstoppable-healthy-street/",
   scope: "openid wallet"
 })
 
