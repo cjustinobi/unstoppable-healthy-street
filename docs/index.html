@@ -39,10 +39,14 @@
           height: 20vw;
           object-fit: cover;
         }
+
+        .btn-blue {
+          background: #7c7cd2;
+        }
       }
     </style>
 
-    <title>Street Food Kigali</title>
+    <title>Healthy Street</title>
   </head>
 
   <body>
@@ -50,7 +54,20 @@
 
       <nav class="navbar bg-white navbar-light">
         <div class="container-fluid">
-          <span class="navbar-brand m-0 h4 fw-bold">Street Food Kigali</span>
+          <span onclick="logout()" class="navbar-brand m-0 h4 fw-bold">Healthy Street</span>
+          <div class="dropdown-btn d-none dropdown ms-3">
+            <button class="btn btn-bd-light dropdown-toggle" id="bd-versions" data-bs-toggle="dropdown"
+                    aria-expanded="false" data-bs-display="static">
+              <span class="d-none d-lg-inline username"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-versions">
+              <li>
+                <a onclick="logout()" class="dropdown-item current" aria-current="true" href="#">Logout</a>
+              </li>
+            </ul>
+          </div>
+          <div id="action-btn">
+          </div>
           <span class="nav-link border rounded-pill bg-light">
             <span id="balance">0</span>
             cUSD
@@ -58,7 +75,7 @@
         </div>
       </nav>
 
-      <div class="alert alert-warning sticky-top mt-2" role="alert">
+      <div class="alert alert-warning sticky-top mt-5" role="alert">
         <span id="notification">⌛ Loading...</span>
       </div>
   
@@ -124,9 +141,9 @@
                 <div class="col">
                   <input
                     type="text"
-                    id="newLocation"
+                    id="newDomain"
                     class="form-control mb-2"
-                    placeholder="Enter location"
+                    placeholder="Enter Domain"
                   />
                 </div>
                 <div class="col">
@@ -155,6 +172,60 @@
               id="newProductBtn"
             >
               Add product
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+        class="modal fade"
+        id="tipModal"
+        tabindex="-1"
+        aria-labelledby="newVendor"
+        aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newVendor">Send Tip</h5>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-row">
+                <div class="col">
+                  <input id="vendorAddress" class="form-control mb-2" disabled/>
+                </div>
+                <div class="col">
+                  <input id="resolvedAddress" class="form-control mb-2" disabled/>
+                </div>
+                <div class="col">
+                  <input type="number" id="tipAmount" class="form-control mb-2" placeholder="Enter amount"/>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-light border"
+                data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+                type="button"
+                class="btn btn-dark"
+                data-bs-dismiss="modal"
+                id="sendTipBtn"
+            >
+              Send Tip
             </button>
           </div>
         </div>

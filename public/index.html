@@ -81,13 +81,6 @@
   
       <div class="mb-4" style="margin-top: 4em">
         <a
-            class="btn btn-blue rounded-pill"
-            data-bs-toggle="modal"
-            data-bs-target="#addVendor"
-        >
-          Register as a Vendor
-        </a>
-        <a
           class="btn btn-dark rounded-pill"
           data-bs-toggle="modal"
           data-bs-target="#addModal"
@@ -148,9 +141,9 @@
                 <div class="col">
                   <input
                     type="text"
-                    id="newLocation"
+                    id="newDomain"
                     class="form-control mb-2"
-                    placeholder="Enter location"
+                    placeholder="Enter Domain"
                   />
                 </div>
                 <div class="col">
@@ -179,6 +172,60 @@
               id="newProductBtn"
             >
               Add product
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+        class="modal fade"
+        id="tipModal"
+        tabindex="-1"
+        aria-labelledby="newVendor"
+        aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newVendor">Send Tip</h5>
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-row">
+                <div class="col">
+                  <input id="vendorAddress" class="form-control mb-2" disabled/>
+                </div>
+                <div class="col">
+                  <input id="resolvedAddress" class="form-control mb-2" disabled/>
+                </div>
+                <div class="col">
+                  <input type="number" id="tipAmount" class="form-control mb-2" placeholder="Enter amount"/>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-light border"
+                data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+                type="button"
+                class="btn btn-dark"
+                data-bs-dismiss="modal"
+                id="sendTipBtn"
+            >
+              Send Tip
             </button>
           </div>
         </div>

@@ -1,17 +1,21 @@
-import Web3 from "web3"
-import { newKitFromWeb3 } from "@celo/contractkit"
-import BigNumber from "bignumber.js"
-import marketplaceAbi from "../contract/marketplace.abi.json"
-import erc20Abi from "../contract/erc20.abi.json"
+import Web3 from 'web3'
+import { newKitFromWeb3 } from '@celo/contractkit'
+import BigNumber from 'bignumber.js'
+import marketplaceAbi from '../contract/marketplace.abi.json'
+import erc20Abi from '../contract/erc20.abi.json'
 import UAuth from '@uauth/js'
+import { domainResolution } from './resolveDomain'
+import { sendTx } from './transaction'
 
 const ERC20_DECIMALS = 18
-const MPContractAddress = "0xE1ea345FEeA9401C0f3E7593092436D4703ACB8a"
+// const MPContractAddress = "0xE1ea345FEeA9401C0f3E7593092436D4703ACB8a"
+const MPContractAddress = "0xe47C49516dAf9d5490CE04a19322AA3DF4f9F932"
 const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
 
 let kit
 let contract
 let products = []
+let receiverAddress
 
 const uauth = new UAuth({
   clientID: "8281b30a-61de-4df4-99e4-116a3a4c340a",
@@ -68,7 +72,7 @@ const getProducts = async function() {
         name: p[1],
         image: p[2],
         description: p[3],
-        location: p[4],
+        domain: p[4],
         price: new BigNumber(p[5]),
         sold: p[6],
       })
@@ -104,9 +108,9 @@ function productTemplate(_product) {
         <p class="card-text mb-4" style="min-height: 82px">
           ${_product.description}             
         </p>
-        <p class="card-text mt-4">
-          <i class="bi bi-geo-alt-fill"></i>
-          <span>${_product.location}</span>
+        <p class="card-text mt-4 tip" id="tip">
+          <i class="bi bi-cup-straw"></i>
+          <span class="tip-address">${_product.domain}</span>
         </p>
         <div class="d-grid gap-2">
           <a class="btn btn-lg btn-outline-dark buyBtn fs-6 p-3" id=${
@@ -149,6 +153,13 @@ function notificationOff() {
 }
 
 
+document
+  .querySelector('#sendTipBtn')
+  .addEventListener('click', async () => {
+    const amount = document.getElementById("tipAmount").value
+    const res = await sendTx(receiverAddress, amount)
+    console.log(res)
+})
 
 
 document
@@ -160,7 +171,7 @@ document
       document.getElementById("newProductName").value,
       document.getElementById("newImgUrl").value,
       document.getElementById("newProductDescription").value,
-      document.getElementById("newLocation").value,
+      document.getElementById("newDomain").value,
       new BigNumber(document.getElementById("newPrice").value)
       .shiftedBy(ERC20_DECIMALS)
       .toString()
@@ -198,14 +209,25 @@ document
         notification(`⚠️ ${error}.`)
       }
     }
+
+    if (e.target.className.includes('tip-address')) {
+      const domain = e.target.innerText
+      const address = await domainResolution(domain)
+      if (address) {
+        receiverAddress = address
+        let modal = new bootstrap.Modal(document.getElementById("tipModal"), {});
+        modal.show();
+        document.querySelector('#vendorAddress').value = domain
+        document.querySelector('#resolvedAddress').value = address
+      }
+    }
   })
-
-
 
 window.login = async () => {
   try {
     const res = await uauth.loginWithPopup()
     if (res) {
+      console.log(res)
       localStorage.setItem('address', res.idToken.sub)
       notification("⌛ Loading...")
       await connectCeloWallet()
@@ -225,7 +247,10 @@ window.login = async () => {
 
 window.logout = async () => {
   try {
+    alert('here')
     await uauth.logout()
+    alert('here2')
+    debugger
     localStorage.removeItem('address')
     loginBtn()
 
@@ -259,9 +284,8 @@ window.addEventListener("load", async () => {
     el.classList.remove('d-none')
     document.querySelector('.username').innerHTML = localStorage.getItem('address')
 
-    document.querySelector('.login').style.display = 'none'
+    // document.querySelector('.login').style.display = 'none'
   } else {
     loginBtn()
   }
-});
-
+})
