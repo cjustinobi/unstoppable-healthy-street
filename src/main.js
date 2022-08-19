@@ -157,6 +157,7 @@ document
   .querySelector('#sendTipBtn')
   .addEventListener('click', async () => {
     const amount = document.getElementById("tipAmount").value
+    const receiverAddress = document.getElementById("resolvedAddress").value
     const res = await sendTx(receiverAddress, amount)
     console.log(res)
 })
