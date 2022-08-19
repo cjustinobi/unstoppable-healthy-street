@@ -1,7 +1,6 @@
-# Healthy Street
+# Tip The Best
 
-This demonstrates how to use Unstoppable Domain to authenticate users
-on a Food vendor application
+This application allows us to send tip to your favourite food vendor
 
 
 # Project Code
@@ -14,7 +13,7 @@ Website - [https://cjustinobi.github.io/unstoppable-healthy-street/](https://cju
 
 # Demo Video
 
-Youtube - [https://youtu.be/LOMKzDsFFXE](https://youtu.be/LOMKzDsFFXE)
+Youtube - [https://youtu.be/9EFlEiRs8uQ](https://youtu.be/9EFlEiRs8uQ)
 
 
 # Contact Info

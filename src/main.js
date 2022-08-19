@@ -15,7 +15,6 @@ const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
 let kit
 let contract
 let products = []
-let receiverAddress
 
 const uauth = new UAuth({
   clientID: "8281b30a-61de-4df4-99e4-116a3a4c340a",
@@ -286,7 +285,6 @@ window.addEventListener("load", async () => {
     el.classList.remove('d-none')
     document.querySelector('.username').innerHTML = localStorage.getItem('address')
 
-    // document.querySelector('.login').style.display = 'none'
   } else {
     loginBtn()
   }
