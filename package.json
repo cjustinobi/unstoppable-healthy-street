@@ -2,6 +2,7 @@
   "main": "index.js",
   "dependencies": {
     "@alch/alchemy-web3": "^1.4.6",
+    "@biconomy/hyphen-widget": "^0.1.0",
     "@celo/contractkit": "^1.0.2",
     "@uauth/js": "^2.2.0",
     "@unstoppabledomains/resolution": "^7.1.4",

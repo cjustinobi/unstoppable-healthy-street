@@ -4,6 +4,8 @@ import BigNumber from 'bignumber.js'
 import marketplaceAbi from '../contract/marketplace.abi.json'
 import erc20Abi from '../contract/erc20.abi.json'
 import UAuth from '@uauth/js'
+import * as HyphenWidget from '@biconomy/hyphen-widget'
+// import '@biconomy/hyphen-widget/dist/index.css'
 import { domainResolution } from './resolveDomain'
 import { sendTx } from './transaction'
 
@@ -284,6 +286,17 @@ window.addEventListener("load", async () => {
     let el = document.querySelector('.dropdown-btn')
     el.classList.remove('d-none')
     document.querySelector('.username').innerHTML = localStorage.getItem('address')
+
+    HyphenWidget.default.init(
+      document.getElementById("widget"),
+      {
+        tag: "crossTransfer",
+        dAppName: "crossTransfer",
+        env: "test",
+        showWidget: true,
+        showCloseButton: false,
+      }
+    );
 
   } else {
     loginBtn()
