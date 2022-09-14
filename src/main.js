@@ -217,6 +217,7 @@ document
     }
 
     if (e.target.className.includes('tip-address')) {
+      debugger
       const domain = e.target.innerText
       const address = await domainResolution(domain)
       if (address) {
