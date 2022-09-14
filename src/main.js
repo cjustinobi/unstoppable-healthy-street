@@ -288,16 +288,6 @@ window.addEventListener("load", async () => {
     el.classList.remove('d-none')
     document.querySelector('.username').innerHTML = localStorage.getItem('address')
 
-    HyphenWidget.default.init(
-      document.getElementById("widget"),
-      {
-        tag: "crossTransfer",
-        dAppName: "crossTransfer",
-        env: "test",
-        showWidget: true,
-        showCloseButton: false,
-      }
-    );
 
   } else {
     loginBtn()
