@@ -1,7 +1,6 @@
 import Web3 from 'web3'
 import BigNumber from 'bignumber.js'
 import marketplaceAbi from '../contract/marketplace.abi.json'
-import erc20Abi from '../contract/erc20.abi.json'
 import UAuth from '@uauth/js'
 import { domainResolution } from './resolveDomain'
 import { sendTx } from './transaction'
@@ -9,7 +8,6 @@ import { sendTx } from './transaction'
 const ERC20_DECIMALS = 18
 const MPContractAddress = "0x99196B5E0e64bB22C317F793E3DEc417D5458831"
 
-let kit
 let web3 = ''
 let contract = ''
 let products = []
@@ -41,16 +39,6 @@ const getContract = async () => {
   } catch (error) {
     console.log('ERROR:', error)
   }
-  // return contract
-}
-
-async function approve(_price) {
-  const cUSDContract = new kit.web3.eth.Contract(erc20Abi, cUSDContractAddress)
-
-  const result = await cUSDContract.methods
-    .approve(MPContractAddress, _price)
-    .send({ from: kit.defaultAccount })
-  return result
 }
 
 const getBalance = async function () {
@@ -58,16 +46,16 @@ const getBalance = async function () {
   const web3 = new Web3(window.ethereum)
 
   await web3.eth.getBalance(localStorage.getItem('wallet_address'), (err, balance) => {
-    document.querySelector("#balance").textContent = web3.utils.fromWei(balance, 'ether')
+    document.querySelector("#balance").textContent = parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(2)
   });
 
 }
 
 const getProducts = async function() {
-const gasPrice = await web3.eth.getGasPrice();
-console.log(gasPrice)
+
   const _productsLength = await contract.methods.getProductsLength().call()
   const _products = []
+  notification("⌛ Loading...")
   for (let i = 0; i < _productsLength; i++) {
     let _product = new Promise(async (resolve, reject) => {
       let p = await contract.methods.readProduct(i).call()
@@ -86,6 +74,7 @@ console.log(gasPrice)
   }
   products = await Promise.all(_products)
   renderProducts()
+  notificationOff()
 }
 
 function renderProducts() {
@@ -149,7 +138,7 @@ function identiconTemplate(_address) {
 
 function notification(_text) {
   document.querySelector(".alert").style.display = "block"
-  document.querySelector("#notification").textContent = _text
+  document.querySelector("#notification").innerHTML = _text
 }
 
 function notificationOff() {
@@ -194,10 +183,12 @@ document
       document.getElementById("newImgUrl").value,
       document.getElementById("newProductDescription").value,
       document.getElementById("newDomain").value,
-      new BigNumber(document.getElementById("newPrice").value)
+      document.getElementById("newPrice").value ? new BigNumber(document.getElementById("newPrice").value)
       .shiftedBy(ERC20_DECIMALS)
-      .toString()
+      .toString() : ''
     ]
+
+    if (params.some(param => param === '')) return notification(`⚠️ All fields are required.`)
     notification(`⌛ Adding "${params[0]}"...`)
 
     const tx = {
@@ -246,22 +237,11 @@ document
 
           web3.eth.getTransactionReceipt(txHash)
             .then((receipt) => {
-              // if (receipt) {
-                console.log(receipt)
-                getProducts()
-                getBalance()
-                notification(`🎉 You successfully bought "${products[data[0]].name}".`)
-              // }
+              getProducts()
+              getBalance()
+              notification(`🎉 You successfully bought "${products[data[0]].name}".`)
             })
 
-
-          // web3.eth.getTransaction(txHash)
-          //   .then((transaction) => {
-          //     console.log(transaction)
-          //     getProducts()
-          //     getBalance()
-          //     notification(`🎉 You successfully bought "${products[data[0]].name}".`)
-          //   })
         }
 
 
@@ -323,7 +303,7 @@ window.logout = async () => {
 function loginBtn() {
   const btn = document.createElement('button')
   btn.innerText = 'Login with Unstoppable'
-  btn.className = 'btn btn-success login'
+  btn.className = 'btn login'
   btn.setAttribute('onclick', 'login()')
   document.getElementById("action-btn").appendChild(btn)
 }

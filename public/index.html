@@ -36,6 +36,17 @@
         font-weight: 500;
       }
 
+      button:focus, button:hover, button:target {
+        outline: none !important;
+        border: none !important;
+      }
+
+   .dropdown-menu {
+     padding: 8px;
+     font-size: 14px;
+     margin-top: 10px;
+   }
+
       @media (min-width: 576px) {
         .card {
           border: 0;
@@ -67,21 +78,26 @@
       <nav class="navbar bg-white navbar-light">
         <div class="container-fluid">
           <span onclick="logout()" class="navbar-brand m-0 h4 fw-bold">Healthy Street</span>
-          <div class="dropdown-btn d-none dropdown ms-3">
+
+          <span class="nav-link border rounded-pill bg-light">
+            <div id="action-btn">
+          </div>
+            <div class="dropdown-btn d-none dropdown ms-3">
             <button class="btn btn-bd-light dropdown-toggle" id="bd-versions" data-bs-toggle="dropdown"
                     aria-expanded="false" data-bs-display="static">
               <span class="d-none d-lg-inline username"></span>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-versions">
               <li>
+                <a class="dropdown-item current" aria-current="true" href="#">
+                  Wallet Balance: <span id="balance">0</span>
+                </a>
+              </li>
+              <li>
                 <a onclick="logout()" class="dropdown-item current" aria-current="true" href="#">Logout</a>
               </li>
             </ul>
           </div>
-          <div id="action-btn">
-          </div>
-          <span class="nav-link border rounded-pill bg-light">
-            Wallet Balance: <span id="balance">0</span>
           </span>
         </div>
       </nav>
