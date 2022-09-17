@@ -20,6 +20,7 @@ export const sendTx = async  (receiver, amount) => {
 
       const transactionHash = await provider.send('eth_sendTransaction', transaction)
       console.log(`Txn Hash: ${transactionHash}`)
+      return transactionHash
     } catch(err){
       console.log(err)
     }

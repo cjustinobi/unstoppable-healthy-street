@@ -7,7 +7,8 @@ import { domainResolution } from './resolveDomain'
 import { sendTx } from './transaction'
 
 const ERC20_DECIMALS = 18
-const MPContractAddress = "0x727da313Cbe2D0a2159Fa4D0832fd71455a0E9Fc"
+// const MPContractAddress = "0x727da313Cbe2D0a2159Fa4D0832fd71455a0E9Fc"
+const MPContractAddress = "0x99196B5E0e64bB22C317F793E3DEc417D5458831"
 
 let kit
 let web3 = ''
@@ -118,9 +119,7 @@ function productTemplate(_product) {
           <span class="tip-address">${_product.domain}</span>
         </p>
         <div class="d-grid gap-2">
-          <a class="btn btn-lg btn-outline-dark buyBtn fs-6 p-3" id=${
-            _product.index
-          }>
+          <a class="btn btn-lg btn-outline-dark buyBtn fs-6 p-3" id=${_product.index}-${_product.price}>
             Buy for ${web3.utils.fromWei(String(_product.price), 'ether')}
             
           </a>
@@ -164,11 +163,25 @@ document
   .addEventListener('click', async () => {
     const amount = document.getElementById("tipAmount").value
     const receiverAddress = document.getElementById("resolvedAddress").value
-    const res = await sendTx(receiverAddress, amount)
-    if (res) {
+    const txHash = await sendTx(receiverAddress, amount)
+    if (txHash) {
       document.querySelector('#tip-form').reset()
-      console.log(res)
+      notification(`🎉 Check on Etherscan: ${txHash}`)
     }
+})
+
+document.querySelector('#newDomain').addEventListener('change', async (e) => {
+  try {
+    const res = await domainResolution(e.target.value)
+    if (res) {
+      document.getElementById('domain-msg').innerHTML = `<small class="domain">${res}</small>`
+    } else {
+      document.getElementById('domain-msg').innerHTML = '<small class="domain-error">Invalid domain</small>'
+    }
+
+  } catch (e) {
+    document.getElementById('domain-msg').innerHTML = '<small class="domain-error">Invalid domain</small>'
+  }
 })
 
 
@@ -213,31 +226,45 @@ document
 
   document.querySelector("#marketplace").addEventListener("click", async (e) => {
     if (e.target.className.includes("buyBtn")) {
-      const index = e.target.id
-      // notification("⌛ Waiting for payment approval...")
-      // try {
-      //   await approve(products[index].price)
-      // } catch (error) {
-      //   notification(`⚠️ ${error}.`)
-      // }
-      // notification(`⌛ Awaiting payment for "${products[index].name}"...`)
-      try {
-        const tx = {
-          from: localStorage.getItem('wallet_address'),
-          to: MPContractAddress,
-          gas: 500000,
-          data: contract.methods.buyProduct(index).encodeABI()
+      let data = e.target.id
+      data = data.split('-')
+      const from = localStorage.getItem('wallet_address')
 
+      notification(`⌛ Awaiting payment for "${products[data[0]].name}"...`)
+      try {
+
+        const tx = {
+          from,
+          to: MPContractAddress,
+          data: contract.methods.buyProduct(data[0]).encodeABI()
         }
 
-        const signature = await web3.eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY)
-        web3.eth.sendSignedTransaction(signature.rawTransaction).on('receipt', receipt => {
-          if(receipt) {
-            getProducts()
-            getBalance()
-            notification(`🎉 You successfully bought "${products[index].name}".`)
-          }
+        const txHash = await window.ethereum.request({
+          method: "eth_sendTransaction",
+          params: [tx],
         })
+        if(txHash) {
+
+          web3.eth.getTransactionReceipt(txHash)
+            .then((receipt) => {
+              // if (receipt) {
+                console.log(receipt)
+                getProducts()
+                getBalance()
+                notification(`🎉 You successfully bought "${products[data[0]].name}".`)
+              // }
+            })
+
+
+          // web3.eth.getTransaction(txHash)
+          //   .then((transaction) => {
+          //     console.log(transaction)
+          //     getProducts()
+          //     getBalance()
+          //     notification(`🎉 You successfully bought "${products[data[0]].name}".`)
+          //   })
+        }
+
 
       } catch (error) {
         notification(`⚠️ ${error}.`)
@@ -268,7 +295,7 @@ window.login = async () => {
       await getBalance()
       await getProducts()
       notificationOff()
-      // logoutBtn()
+
       let el = document.querySelector('.dropdown-btn')
       el.classList.remove('d-none')
       document.querySelector('.username').innerHTML = localStorage.getItem('address')
@@ -283,7 +310,6 @@ window.logout = async () => {
   try {
     await uauth.logout()
     localStorage.removeItem('address')
-    // loginBtn()
     let el = document.querySelector('.dropdown-btn')
     el.classList.add('d-none')
     window.location.reload()
