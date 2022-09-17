@@ -27,6 +27,15 @@
         --bs-font-sans-serif: "DM Sans", sans-serif;
       }
 
+      .domain-error {
+        color: #e84c4c;
+        font-weight: 500;
+      }
+      .domain {
+        color: #333;
+        font-weight: 500;
+      }
+
       @media (min-width: 576px) {
         .card {
           border: 0;
@@ -72,12 +81,10 @@
           <div id="action-btn">
           </div>
           <span class="nav-link border rounded-pill bg-light">
-            <span id="balance">0</span>
-            cUSD
+            Wallet Balance: <span id="balance">0</span>
           </span>
         </div>
       </nav>
-
       <div class="alert alert-warning sticky-top mt-5" role="alert">
         <span id="notification"></span>
       </div>
@@ -148,6 +155,7 @@
                     class="form-control mb-2"
                     placeholder="Enter Domain"
                   />
+                  <div id="domain-msg"></div>
                 </div>
                 <div class="col">
                   <input
