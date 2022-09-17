@@ -16,13 +16,8 @@ interface IERC20Token {
 
 contract Marketplace {
 
-
-    address payable contractOwner;
     uint internal productsLength = 0;
-    uint internal stockistLength = 0;
     address internal cUsdTokenAddress = 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1;
-
-
 
     struct Product {
         address payable owner;
@@ -34,13 +29,7 @@ contract Marketplace {
         uint sold;
     }
 
-    struct Stockist {
-        address payable stockistAddress;
-    }
-
     mapping (uint => Product) internal products;
-    mapping(uint => Stockist) internal stockists;
-    mapping(address => bool) stockistExists;
 
     function writeProduct(
         string memory _name,
@@ -61,8 +50,6 @@ contract Marketplace {
         );
         productsLength++;
     }
-
-
 
     function readProduct(uint _index) public view returns (
         address payable,
@@ -96,29 +83,7 @@ contract Marketplace {
         products[_index].sold++;
     }
 
-    function setStockist(uint256 amount) checkStockist public payable {
-        IERC20Token(cUsdTokenAddress).transferFrom(msg.sender, contractOwner, amount);
-        stockists[stockistLength] = Stockist(payable(msg.sender));
-        stockistExists[msg.sender] = true;
-        stockistLength++;
-    }
-
     function getProductsLength() public view returns (uint) {
         return (productsLength);
     }
-
-    function getStockistsLength() public view returns (uint) {
-        return (stockistLength);
-    }
-
-    function getStockists(uint _index) public view returns (address payable) {
-        return (stockists[_index].stockistAddress);
-    }
-
-    modifier checkStockist {
-        require(!stockistExists[msg.sender], "You have already joined");
-        _;
-    }
-
-
 }

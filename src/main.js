@@ -1,49 +1,47 @@
 import Web3 from 'web3'
-import { newKitFromWeb3 } from '@celo/contractkit'
 import BigNumber from 'bignumber.js'
 import marketplaceAbi from '../contract/marketplace.abi.json'
 import erc20Abi from '../contract/erc20.abi.json'
 import UAuth from '@uauth/js'
-import * as HyphenWidget from '@biconomy/hyphen-widget'
-// import '@biconomy/hyphen-widget/dist/index.css'
 import { domainResolution } from './resolveDomain'
 import { sendTx } from './transaction'
 
 const ERC20_DECIMALS = 18
-// const MPContractAddress = "0xE1ea345FEeA9401C0f3E7593092436D4703ACB8a"
-const MPContractAddress = "0x5C8E0c1D9ae89B18B89358249C23EC837a190Ba3"
-const cUSDContractAddress = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"
+const MPContractAddress = "0x727da313Cbe2D0a2159Fa4D0832fd71455a0E9Fc"
 
 let kit
-let contract
+let web3 = ''
+let contract = ''
 let products = []
 
 const uauth = new UAuth({
   clientID: "8281b30a-61de-4df4-99e4-116a3a4c340a",
-  redirectUri: "https://cjustinobi.github.io/unstoppable-healthy-street/",
+  // redirectUri: "https://cjustinobi.github.io/unstoppable-healthy-street/",
+  redirectUri: "http://localhost:3000",
   scope: "openid wallet"
 })
 
-const connectCeloWallet = async function () {
-  if (window.celo) {
-    notification("⚠️ Please approve this DApp to use it.")
-    try {
-      await window.celo.enable()
-      notificationOff()
 
-      const web3 = new Web3(window.celo)
-      kit = newKitFromWeb3(web3)
+const getContract = async () => {
+  try {
+    const { ethereum } = window
 
-      const accounts = await kit.web3.eth.getAccounts()
-      kit.defaultAccount = accounts[0]
+    if (ethereum) {
+      //checking for eth object in the window
+      // Set the ABI
+      web3 = new Web3(process.env.GOERLI_URL)
+      contract = new web3.eth.Contract(marketplaceAbi, MPContractAddress, {
+        from: localStorage.getItem('wallet_address'), // default from address
+        gasPrice: '2000000' // default gas price in wei, 20 gwei in this case
+      });
 
-      contract = new kit.web3.eth.Contract(marketplaceAbi, MPContractAddress)
-    } catch (error) {
-      notification(`⚠️ ${error}.`)
+    } else {
+      console.log('Ethereum object doesn\'t exist!')
     }
-  } else {
-    notification("⚠️ Please install the CeloExtensionWallet.")
+  } catch (error) {
+    console.log('ERROR:', error)
   }
+  // return contract
 }
 
 async function approve(_price) {
@@ -56,12 +54,18 @@ async function approve(_price) {
 }
 
 const getBalance = async function () {
-  const totalBalance = await kit.getTotalBalance(kit.defaultAccount)
-  const cUSDBalance = totalBalance.cUSD.shiftedBy(-ERC20_DECIMALS).toFixed(2)
-  document.querySelector("#balance").textContent = cUSDBalance
+
+  const web3 = new Web3(window.ethereum)
+
+  await web3.eth.getBalance(localStorage.getItem('wallet_address'), (err, balance) => {
+    document.querySelector("#balance").textContent = web3.utils.fromWei(balance, 'ether')
+  });
+
 }
 
 const getProducts = async function() {
+const gasPrice = await web3.eth.getGasPrice();
+console.log(gasPrice)
   const _productsLength = await contract.methods.getProductsLength().call()
   const _products = []
   for (let i = 0; i < _productsLength; i++) {
@@ -117,7 +121,8 @@ function productTemplate(_product) {
           <a class="btn btn-lg btn-outline-dark buyBtn fs-6 p-3" id=${
             _product.index
           }>
-            Buy for ${_product.price.shiftedBy(-ERC20_DECIMALS).toFixed(2)} cUSD
+            Buy for ${web3.utils.fromWei(String(_product.price), 'ether')}
+            
           </a>
         </div>
       </div>
@@ -182,35 +187,58 @@ document
       .toString()
     ]
     notification(`⌛ Adding "${params[0]}"...`)
+
+    const tx = {
+      from: localStorage.getItem('wallet_address'),
+      to: MPContractAddress,
+      gas: 500000,
+      data: contract.methods.writeProduct(...params).encodeABI()
+
+    }
+
     try {
-      const result = await contract.methods
-        .writeProduct(...params)
-        .send({ from: kit.defaultAccount })
+
+      const signature = await web3.eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY)
+      web3.eth.sendSignedTransaction(signature.rawTransaction).on('receipt', receipt => {
+        if(receipt) {
+          getProducts()
+          notification(`🎉 You successfully added "${params[0]}".`)
+          document.querySelector('#product-form').reset()
+        }
+      })
     } catch (error) {
       notification(`⚠️ ${error}.`)
       }
-    notification(`🎉 You successfully added "${params[0]}".`)
-    document.querySelector('#product-form').reset()
-    getProducts()
   })
 
   document.querySelector("#marketplace").addEventListener("click", async (e) => {
     if (e.target.className.includes("buyBtn")) {
       const index = e.target.id
-      notification("⌛ Waiting for payment approval...")
+      // notification("⌛ Waiting for payment approval...")
+      // try {
+      //   await approve(products[index].price)
+      // } catch (error) {
+      //   notification(`⚠️ ${error}.`)
+      // }
+      // notification(`⌛ Awaiting payment for "${products[index].name}"...`)
       try {
-        await approve(products[index].price)
-      } catch (error) {
-        notification(`⚠️ ${error}.`)
-      }
-      notification(`⌛ Awaiting payment for "${products[index].name}"...`)
-      try {
-        const result = await contract.methods
-          .buyProduct(index)
-          .send({ from: kit.defaultAccount })
-        notification(`🎉 You successfully bought "${products[index].name}".`)
-        getProducts()
-        getBalance()
+        const tx = {
+          from: localStorage.getItem('wallet_address'),
+          to: MPContractAddress,
+          gas: 500000,
+          data: contract.methods.buyProduct(index).encodeABI()
+
+        }
+
+        const signature = await web3.eth.accounts.signTransaction(tx, process.env.PRIVATE_KEY)
+        web3.eth.sendSignedTransaction(signature.rawTransaction).on('receipt', receipt => {
+          if(receipt) {
+            getProducts()
+            getBalance()
+            notification(`🎉 You successfully bought "${products[index].name}".`)
+          }
+        })
+
       } catch (error) {
         notification(`⚠️ ${error}.`)
       }
@@ -232,10 +260,11 @@ window.login = async () => {
   try {
     const res = await uauth.loginWithPopup()
     if (res) {
-      console.log(res)
+
       localStorage.setItem('address', res.idToken.sub)
+      localStorage.setItem('wallet_address', res.idToken.wallet_address)
       notification("⌛ Loading...")
-      await connectCeloWallet()
+      await getContract()
       await getBalance()
       await getProducts()
       notificationOff()
@@ -276,11 +305,11 @@ function loginBtn() {
 
 window.addEventListener("load", async () => {
   if (localStorage.getItem('address')) {
-    // logoutBtn()
-    notification("⌛ Loading...")
-    await connectCeloWallet()
+
+    await getContract()
     await getBalance()
     await getProducts()
+
     notificationOff()
 
     let el = document.querySelector('.dropdown-btn')

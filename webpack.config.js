@@ -2,6 +2,7 @@ const path = require("path");
 const webpack = require("webpack");
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const Dotenv = require("dotenv-webpack");
 
 module.exports = {
   mode: "development",
@@ -27,6 +28,9 @@ module.exports = {
     new webpack.ProgressPlugin(),
     new HtmlWebpackPlugin({
       template: path.resolve(process.cwd(), "public", "index.html")
+    }),
+    new Dotenv({
+      systemvars: true
     })
   ]
 }
