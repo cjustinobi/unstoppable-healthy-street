@@ -7,7 +7,6 @@ import { domainResolution } from './resolveDomain'
 import { sendTx } from './transaction'
 
 const ERC20_DECIMALS = 18
-// const MPContractAddress = "0x727da313Cbe2D0a2159Fa4D0832fd71455a0E9Fc"
 const MPContractAddress = "0x99196B5E0e64bB22C317F793E3DEc417D5458831"
 
 let kit
@@ -17,8 +16,8 @@ let products = []
 
 const uauth = new UAuth({
   clientID: "8281b30a-61de-4df4-99e4-116a3a4c340a",
-  // redirectUri: "https://cjustinobi.github.io/unstoppable-healthy-street/",
-  redirectUri: "http://localhost:3000",
+  redirectUri: "https://cjustinobi.github.io/unstoppable-healthy-street/",
+  // redirectUri: "http://localhost:3000",
   scope: "openid wallet"
 })
 
