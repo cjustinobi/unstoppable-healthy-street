@@ -191,8 +191,12 @@ document
     if (params.some(param => param === '')) return notification(`⚠️ All fields are required.`)
     notification(`⌛ Adding "${params[0]}"...`)
 
+    const accounts = await ethereum.request({
+      method: 'eth_requestAccounts',
+    });
+
     const tx = {
-      from: localStorage.getItem('wallet_address'),
+      from: accounts[0],
       to: MPContractAddress,
       gas: 500000,
       data: contract.methods.writeProduct(...params).encodeABI()
