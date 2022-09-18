@@ -218,16 +218,20 @@ document
     if (e.target.className.includes("buyBtn")) {
       let data = e.target.id
       data = data.split('-')
-      const from = localStorage.getItem('wallet_address')
 
       notification(`⌛ Awaiting payment for "${products[data[0]].name}"...`)
       try {
+        const accounts = await ethereum.request({
+          method: 'eth_requestAccounts',
+        });
 
         const tx = {
-          from,
+          from: accounts[0],
           to: MPContractAddress,
           data: contract.methods.buyProduct(data[0]).encodeABI()
         }
+
+
 
         const txHash = await window.ethereum.request({
           method: "eth_sendTransaction",
@@ -246,7 +250,7 @@ document
 
 
       } catch (error) {
-        notification(`⚠️ ${error}.`)
+        notification(`⚠️ Could not place order.`)
       }
     }
 
