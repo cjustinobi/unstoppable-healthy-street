@@ -176,7 +176,7 @@ document.querySelector('#newDomain').addEventListener('change', async (e) => {
 document
   .querySelector("#newProductBtn")
   .addEventListener("click", async (e) => {
-    if(!localStorage.getItem('address')) return alert('Login with Unstoppable to continue')
+    if(!localStorage.getItem('addr')) return alert('Login with Unstoppable to continue')
 
     const params = [
       document.getElementById("newProductName").value,
@@ -285,7 +285,7 @@ window.login = async () => {
 
       let el = document.querySelector('.dropdown-btn')
       el.classList.remove('d-none')
-      document.querySelector('.username').innerHTML = localStorage.getItem('address')
+      document.querySelector('.username').innerHTML = localStorage.getItem('addr')
       document.querySelector('.login').style.display = 'none'
     }
   } catch (error) {
@@ -317,7 +317,7 @@ function loginBtn() {
 }
 
 window.addEventListener("load", async () => {
-  if (localStorage.getItem('address')) {
+  if (localStorage.getItem('addr')) {
 
     await getContract()
     await getBalance()
@@ -327,7 +327,7 @@ window.addEventListener("load", async () => {
 
     let el = document.querySelector('.dropdown-btn')
     el.classList.remove('d-none')
-    document.querySelector('.username').innerHTML = localStorage.getItem('address')
+    document.querySelector('.username').innerHTML = localStorage.getItem('addr')
 
 
   } else {
