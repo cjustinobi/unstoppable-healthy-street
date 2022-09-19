@@ -275,7 +275,7 @@ window.login = async () => {
     const res = await uauth.loginWithPopup()
     if (res) {
 
-      localStorage.setItem('address', res.idToken.sub)
+      localStorage.setItem('addr', res.idToken.sub)
       localStorage.setItem('wallet_addr', res.idToken.wallet_addr)
       notification("⌛ Loading...")
       await getContract()
@@ -296,7 +296,7 @@ window.login = async () => {
 window.logout = async () => {
   try {
     await uauth.logout()
-    localStorage.removeItem('address')
+    localStorage.removeItem('addr')
     let el = document.querySelector('.dropdown-btn')
     el.classList.add('d-none')
     window.location.reload()
