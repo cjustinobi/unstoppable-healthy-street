@@ -276,7 +276,7 @@ window.login = async () => {
     if (res) {
 
       localStorage.setItem('addr', res.idToken.sub)
-      localStorage.setItem('wallet_addr', res.idToken.wallet_addr)
+      localStorage.setItem('wallet_addr', res.idToken.wallet_address)
       notification("⌛ Loading...")
       await getContract()
       await getBalance()
