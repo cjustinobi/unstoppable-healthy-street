@@ -29,7 +29,7 @@ const getContract = async () => {
       // Set the ABI
       web3 = new Web3(process.env.GOERLI_URL)
       contract = new web3.eth.Contract(marketplaceAbi, MPContractAddress, {
-        from: localStorage.getItem('wallet_address'), // default from address
+        from: localStorage.getItem('wallet_addr'), // default from address
         gasPrice: '2000000' // default gas price in wei, 20 gwei in this case
       });
 
@@ -45,7 +45,7 @@ const getBalance = async function () {
 
   const web3 = new Web3(window.ethereum)
 
-  await web3.eth.getBalance(localStorage.getItem('wallet_address'), (err, balance) => {
+  await web3.eth.getBalance(localStorage.getItem('wallet_addr'), (err, balance) => {
     document.querySelector("#balance").textContent = parseFloat(web3.utils.fromWei(balance, 'ether')).toFixed(2)
   });
 
@@ -276,7 +276,7 @@ window.login = async () => {
     if (res) {
 
       localStorage.setItem('address', res.idToken.sub)
-      localStorage.setItem('wallet_address', res.idToken.wallet_address)
+      localStorage.setItem('wallet_addr', res.idToken.wallet_addr)
       notification("⌛ Loading...")
       await getContract()
       await getBalance()
